@@ -3,10 +3,16 @@ stages:
 
 export_parts:
   stage: export
-  image:  ghcr.io/freecad/freecad-docker:latest
+  image: ubuntu:22.04
+  before_script:
+    - apt-get update
+    - apt-get install -y software-properties-common
+    - add-apt-repository -y ppa:freecad-maintainers/freecad-stable
+    - apt-get update
+    - apt-get install -y freecad freecad-python3 python3-pyqt5
   script:
-    - apt-get update && apt-get install -y python3 python3-pyqt5
     - python3 export_parts.py
   artifacts:
     paths:
       - exports/
+    expire_in: 1 week
