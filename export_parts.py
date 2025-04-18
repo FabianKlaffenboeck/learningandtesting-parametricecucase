@@ -1,5 +1,4 @@
 import FreeCAD
-import Part
 import Mesh
 import os
 import glob
@@ -21,18 +20,12 @@ for fc_file in glob.glob("*.FCStd"):
             body_name = obj.Name
             shape = obj.Shape
 
-            # STEP export
-            step_path = os.path.join(out_dir, f"{body_name}.step")
-            shape.exportStep(step_path)
-            print(f"Exported STEP: {step_path}")
-
-            # 3MF export
+            # Create mesh from shape and export as STL
             mesh = Mesh.Mesh()
             mesh.addShape(shape)
-            mesh_path = os.path.join(out_dir, f"{body_name}.3mf")
+            mesh_path = os.path.join(out_dir, f"{body_name}.stl")
             mesh.write(mesh_path)
-            print(f"Exported 3MF: {mesh_path}")
-
+            print(f"Exported STL: {mesh_path}")
         else:
             print(f"Skipped: {obj.Name} ({obj.TypeId})")
 
