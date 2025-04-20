@@ -7,7 +7,7 @@ output_root = "exports"
 os.makedirs(output_root, exist_ok=True)
 
 for fc_file in glob.glob("*.FCStd"):
-    print(f"🔍 Processing: {fc_file}")
+    print(f"Processing {fc_file}")
     doc = FreeCAD.openDocument(fc_file)
     FreeCAD.setActiveDocument(doc.Name)
     FreeCAD.ActiveDocument.recompute()
@@ -17,23 +17,21 @@ for fc_file in glob.glob("*.FCStd"):
     os.makedirs(out_dir, exist_ok=True)
 
     for obj in doc.Objects:
-        if obj.TypeId == 'PartDesign::Body' and hasattr(obj, "Shape"):
+        if obj.TypeId == 'PartDesign::Body':
             shape = obj.Shape
             if not shape.isNull():
-                # Sanitize the object name for safe filenames if needed
-                obj_name_safe = obj.Name.replace(" ", "_")
-                out_file = os.path.join(out_dir, f"{obj_name_safe}.stl")
-
+                stl_file = os.path.join(out_dir, f"{obj.Name}.stl")
                 mesh = MeshPart.meshFromShape(
                     Shape=shape,
                     LinearDeflection=0.1,
-                    AngularDeflection=15
+                    AngularDeflection=15,
+                    Relative=False
                 )
-                mesh.write(out_file)
-                print(f"✅ Exported: {out_file}")
+                mesh.write(stl_file)
+                print(f"Exported body to STL: {stl_file}")
             else:
-                print(f"⚠️ Skipped null shape: {obj.Name}")
+                print(f"Skipped null shape: {obj.Name}")
         else:
-            print(f"⏩ Skipped: {obj.Name} ({obj.TypeId})")
+            print(f"Skipped: {obj.Name} ({obj.TypeId})")
 
     doc.close()
